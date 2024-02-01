@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// @id - 主键
+// @default - 默认值
+// @unique - 唯一值
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  account   String   @unique
+  userId    String   @default(uuid())
+  pwd       String
+  email     String?
+  phone     String?
+  balance   Float    @default(0)
+  createdAt DateTime @default(now())
+
+  // 将表面映射为小写的user
+  @@map("user")
+}
