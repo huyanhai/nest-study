@@ -1,15 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Req } from '@nestjs/common';
 import { FindUserDto } from './dto/find-user.dto';
 import prisma from 'db';
 import { TransactionDto } from './dto/transaction.dto';
+import { PostsDto } from './dto/posts.dto';
+
+import { Request } from 'express';
 
 @Injectable()
 export class UserService {
-  async findById(query: FindUserDto, req) {
-    const reqUser = req['user'];
-    const user = await prisma.user.findFirst({
-      where: { userId: query.userId, account: reqUser.account },
+  constructor(@Inject('REQUEST') private readonly req: Request) {}
+
+  async checkUser() {
+    const user = this.req['user'];
+
+    const findUser = await prisma.user.findFirst({
+      where: { account: user.account },
     });
+
+    if (findUser) {
+      return findUser;
+    }
+  }
+
+  async findById() {
+    const user = await this.checkUser();
 
     // 事务
     // 同时执行多个sql，要么一起成功，要么一起失败
@@ -67,6 +81,53 @@ export class UserService {
       } else {
         return '余额不足';
       }
+    }
+  }
+
+  async createPosts(req, postsDto: PostsDto) {
+    const user = await this.checkUser();
+
+    if (user) {
+      await prisma.post.create({
+        data: {
+          title: postsDto.title,
+          body: postsDto.body,
+          user: {
+            // 通过id和user的id进行关联
+            connect: { id: user.id },
+          },
+        },
+      });
+
+      const posts = await prisma.post.findMany({
+        select: {
+          user: { select: { account: true } },
+          title: true,
+          body: true,
+        },
+      });
+
+      return posts;
+    } else {
+      return '用户不存在';
+    }
+  }
+
+  async posts() {
+    const user = await this.checkUser();
+
+    if (user) {
+      const posts = await prisma.post.findMany({
+        // 过滤掉不必要的数据
+        select: {
+          user: { select: { account: true } },
+          title: true,
+          body: true,
+        },
+      });
+      return posts;
+    } else {
+      return '用户不存在';
     }
   }
 }

@@ -15,12 +15,14 @@ export class Response implements NestInterceptor {
     const code = context.switchToHttp().getResponse().statusCode;
     const success = code === HttpStatus.OK;
     return next.handle().pipe(
-      map((data) => ({
-        data,
-        success,
-        code,
-        message: success ? '成功' : '失败',
-      })),
+      map((data) => {
+        return {
+          data,
+          success,
+          code,
+          message: success ? '成功' : '失败',
+        };
+      }),
     );
   }
 }
