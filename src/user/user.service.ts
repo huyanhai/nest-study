@@ -1,5 +1,4 @@
-import { Inject, Injectable, Req } from '@nestjs/common';
-import { FindUserDto } from './dto/find-user.dto';
+import { Inject, Injectable } from '@nestjs/common';
 import prisma from 'db';
 import { TransactionDto } from './dto/transaction.dto';
 import { PostsDto } from './dto/posts.dto';
@@ -94,7 +93,9 @@ export class UserService {
           body: postsDto.body,
           user: {
             // 通过id和user的id进行关联
-            connect: { id: user.id },
+            connect: {
+              id: user.id,
+            },
           },
         },
       });

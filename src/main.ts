@@ -11,6 +11,8 @@ import { Response, HttpFilter, Validator } from './common';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // 全局前缀
+  // app.setGlobalPrefix("api");
   // 允许跨域
   app.enableCors();
 
