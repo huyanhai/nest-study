@@ -4,6 +4,7 @@ import { TransactionDto } from './dto/transaction.dto';
 import { PostsDto } from './dto/posts.dto';
 
 import { Request } from 'express';
+import { responseData } from 'utils/response';
 
 @Injectable()
 export class UserService {
@@ -29,11 +30,11 @@ export class UserService {
     // prisma.$transaction([])
 
     if (user) {
-      return {
+      return responseData('', {
         account: user.account,
-      };
+      });
     }
-    return '用户不存在';
+    return responseData('用户不存在', null);
   }
 
   async transaction(req, transactionDto: TransactionDto) {
@@ -49,7 +50,7 @@ export class UserService {
 
     const amount = Number(transactionDto.amount);
     if (!from || !to) {
-      return '用户不存在';
+      return responseData('用户不存在', null);
     } else {
       if (from.balance >= transactionDto.amount) {
         // 执行事务
@@ -76,9 +77,9 @@ export class UserService {
           return toBalance;
         });
 
-        return '转账成功';
+        return responseData('转账成功', null);
       } else {
-        return '余额不足';
+        return responseData('余额不足', null);
       }
     }
   }
@@ -108,9 +109,9 @@ export class UserService {
         },
       });
 
-      return posts;
+      return responseData('', posts);
     } else {
-      return '用户不存在';
+      return responseData('用户不存在', null);
     }
   }
 
@@ -126,9 +127,9 @@ export class UserService {
           body: true,
         },
       });
-      return posts;
+      return responseData('', posts);
     } else {
-      return '用户不存在';
+      return responseData('用户不存在', null);
     }
   }
 }

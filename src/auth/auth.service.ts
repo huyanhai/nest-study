@@ -6,6 +6,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 
 import { comparePassword, encodePassword } from '../utils/bcrypt';
 import prisma from '../db';
+import { responseData } from 'utils/response';
 
 @Injectable()
 export class AuthService {
@@ -27,12 +28,12 @@ export class AuthService {
             pwd: encodePassword(signUpDto.pwd),
           },
         });
-        return '注册成功';
+        return responseData('注册成功', null);
       } else {
-        return '用户已存在';
+        return responseData('用户已存在', null);
       }
     }
-    return '验证码错误';
+    return responseData('验证码错误', null);
   }
 
   async signIn(signInDto: SignInDto) {
@@ -43,15 +44,16 @@ export class AuthService {
     });
 
     if (!user) {
-      return '用户不存在';
+      return responseData('用户不存在', null);
     }
 
     if (!comparePassword(signInDto.pwd, user.pwd)) {
-      return '密码错误';
+      return responseData('密码错误', null);
     }
 
     const payload = { account: user.account };
 
-    return await this.jwtService.signAsync(payload);
+    const token = await this.jwtService.signAsync(payload);
+    return responseData('登录成功', token);
   }
 }

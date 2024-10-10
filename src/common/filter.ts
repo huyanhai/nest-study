@@ -17,9 +17,8 @@ export class HttpFilter implements ExceptionFilter {
       success: code < 300,
       code: exception.getStatus(),
       data: null,
-      message: code === 401 ? '未认证' : exception.message,
+      message: code === 401 ? '未登录' : exception.message,
     };
-
     return response.status(exception.getStatus()).json(body);
   }
 }

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -11,7 +11,7 @@ datasource db {
 // @default - 默认值
 // @unique - 唯一值
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(uuid()) @map("_id")
   account   String   @unique
   userId    String   @default(uuid()) @map("user_id")
   pwd       String
@@ -33,14 +33,14 @@ model User {
 }
 
 model Post {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  id     String @id @default(uuid()) @map("_id")
   // 外键是一个表中的一列或一组列，它们根据另一个表中的主键获取值
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @map("user_id") @db.ObjectId
+  userId String @map("user_id")
   // 一对一
   // userId String @unique
-  title String
-  body  String
+  title  String
+  body   String
 
   @@map("post")
 }

@@ -1,4 +1,4 @@
-# 执行npx prisma db push的时候需要进入到prisma同级目录
+# 执行npx prisma db push的时候需要进入到prisma同级目录(.env所在的目录)
 
 - 一对一
 

@@ -13,14 +13,13 @@ import { map } from 'rxjs';
 export class Response implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
     const code = context.switchToHttp().getResponse().statusCode;
-    const success = code === HttpStatus.OK;
+    const success = [HttpStatus.OK, HttpStatus.CREATED].includes(code);
     return next.handle().pipe(
       map((data) => {
         return {
-          data,
           success,
-          code,
-          message: success ? '成功' : '失败',
+          code: success ? HttpStatus.OK : code,
+          ...data,
         };
       }),
     );

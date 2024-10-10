@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // 全局前缀
-  // app.setGlobalPrefix("api");
+  app.setGlobalPrefix('api');
   // 允许跨域
   app.enableCors();
 
